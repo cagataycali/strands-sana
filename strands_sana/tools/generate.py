@@ -298,6 +298,23 @@ def sana_controlnet_generate(
     """
     pipe = get_pipeline(model_name=model, kind_override="controlnet")
     ctrl = load_image(control_image)
+    try:
+        pipe.load()
+    except Exception as e:
+        if "controlnet" in str(e).lower() and "expected" in str(e).lower():
+            return {
+                "status": "error",
+                "error": (
+                    f"Model '{pipe.model_name}' is not a Sana-ControlNet "
+                    f"checkpoint. As of Sana ToT, diffusers-format ControlNet "
+                    f"weights are 'Coming soon' (see Sana model_zoo.md). "
+                    f"Workaround: use upstream Sana repo's "
+                    f"app/sana_controlnet_pipeline.py with a native ckpt like "
+                    f"Efficient-Large-Model/Sana_1600M_1024px_BF16_ControlNet_HED."
+                ),
+                "underlying": str(e)[:300],
+            }
+        raise
     images = pipe.generate(
         prompt=prompt,
         negative_prompt=negative_prompt,
