@@ -23,3 +23,11 @@ generated/
 .idea/
 .vscode/
 site/
+
+# Cloned upstream reference (not vendored)
+Sana/
+
+# Devduck-generated artifacts
+system_prompt.prompt
+telegram_events/
+whatsapp_events/
