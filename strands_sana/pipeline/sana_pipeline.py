@@ -192,7 +192,7 @@ class SanaPipelineWrapper:
 
         # Sprint pipelines don't accept negative_prompt
         if self.kind not in ("sprint", "sprint-i2i"):
-            kwargs["negative_prompt"] = negative_prompt or None
+            kwargs["negative_prompt"] = negative_prompt or ""
 
         if self.kind == "pag":
             kwargs["pag_scale"] = pag_scale or 0.0
@@ -252,7 +252,7 @@ class SanaPipelineWrapper:
 
         kwargs: dict[str, Any] = dict(
             prompt=prompt,
-            negative_prompt=negative_prompt or None,
+            negative_prompt=negative_prompt or "",
             num_inference_steps=steps,
             guidance_scale=gs,
             height=h, width=w,

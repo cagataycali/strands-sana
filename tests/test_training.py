@@ -1,5 +1,10 @@
-"""Tests for training tools (all dry-run, no GPU required)."""
+"""Tests for training tools (all dry-run, no GPU required).
+
+Auto-clones upstream NVlabs/Sana into /tmp if not already on disk so
+training-script paths can resolve.
+"""
 import os
+import subprocess
 import tempfile
 from pathlib import Path
 
@@ -12,10 +17,40 @@ from strands_sana.tools.training import (
 )
 
 
+@pytest.fixture(scope="session", autouse=True)
+def _ensure_sana_root(tmp_path_factory):
+    """Auto-clone Sana once per test session if not on disk."""
+    # If already resolvable, skip.
+    try:
+        _resolve_sana_root()
+        return
+    except FileNotFoundError:
+        pass
+    # Use SANA_ROOT or clone shallow into a known location.
+    sana_root = os.environ.get("SANA_ROOT")
+    if sana_root and Path(sana_root).exists():
+        os.environ["SANA_ROOT"] = sana_root
+        return
+    target = Path("/tmp/_sana_for_tests")
+    if not (target / "train_scripts").exists():
+        target.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            subprocess.run(
+                ["git", "clone", "--depth", "1", "--filter=blob:none",
+                 "https://github.com/NVlabs/Sana.git", str(target)],
+                check=True, timeout=180,
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            )
+        except Exception:
+            pytest.skip("Could not clone NVlabs/Sana — set SANA_ROOT to skip clone")
+    os.environ["SANA_ROOT"] = str(target)
+
+
 def _call(t, **kw):
-    return t.original_func(**kw) if hasattr(t, "original_func") else t(**kw)
-
-
+    """Strands @tool now decorated as DecoratedFunctionTool — call directly."""
+    if hasattr(t, "original_func"):
+        return t.original_func(**kw)
+    return t(**kw)
 def test_resolve_sana_root_explicit(tmp_path):
     """Explicit sana_root with a fake `train_scripts` dir resolves."""
     fake = tmp_path / "MyFakeSana"
