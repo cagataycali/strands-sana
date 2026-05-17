@@ -351,8 +351,8 @@ def sana_load_lora(
         adapter_name: Custom name (auto-generated if None).
         model: Which base model alias to attach to.
     """
-    pipe = get_pipeline(model_name=model)
     try:
+        pipe = get_pipeline(model_name=model)
         pipe.load_lora(repo_or_path, scale=scale, adapter_name=adapter_name)
     except ValueError as e:
         msg = str(e)
@@ -366,8 +366,13 @@ def sana_load_lora(
                 "underlying": msg,
             }
         return {"status": "error", "error": msg, "lora": repo_or_path}
-    except Exception as e:
-        return {"status": "error", "error": str(e), "lora": repo_or_path}
+    except BaseException as e:
+        # Catch HF RepositoryNotFoundError, OSError, etc.
+        return {
+            "status": "error",
+            "error": f"{type(e).__name__}: {str(e)[:300]}",
+            "lora": repo_or_path,
+        }
     return {
         "status": "success",
         "lora": repo_or_path,
