@@ -4,7 +4,7 @@ Full coverage of the Sana family: text-to-image, image-to-image,
 text-to-video, image-to-video, plus the training & RL post-training
 pipelines.
 """
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 
 from .tools.generate import (
     sana_generate, sana_batch, sana_load_model,

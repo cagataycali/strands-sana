@@ -1,5 +1,37 @@
 # Changelog
 
+## [0.4.1] - 2026-05-17
+
+### 🐛 Bug fixes — verified on real GPU (NVIDIA Thor)
+
+11 bugs found by stress-testing all 33 tools on Thor dev kit:
+
+#### Critical fixes
+- **#3** `negative_prompt or None` → AttributeError when CFG > 1
+- **#4** Video model HF repos were 404 (made-up names) — now use canonical
+  upstream names from model_zoo.md
+- **#5** Sana-Sprint with `steps != 2` failed with intermediate_timesteps error
+- **#6** SANA-Video required (h, w) divisible by 32; binning produced 624
+- **#9** Scheduler swap to non-flow schedulers (DDIM/Heun) failed with
+  prediction_type=flow_prediction error
+
+#### Medium fixes
+- **#10** ControlNet with non-ControlNet checkpoint now returns helpful error
+- **#11** LoRA load now wraps RepositoryNotFoundError, PEFT-missing into
+  error dicts
+
+#### Infra / DX
+- **#2** Training tests auto-clone Sana shallow if missing (cross-machine)
+- **#7** MP4 export multi-tier fallback + new `[video]` extra
+- New `[lora]` extra (peft) for LoRA support
+
+### Tests
+- 72/72 passing on Thor (aarch64, sm_110, CUDA 13)
+- All 33 tools verified end-to-end against real GPU
+- Generated images at 512/1024/1024-PAG via Sana-1.0/Sana-1.5/Sprint
+- Generated MP4 videos at 33/65/97 frames via SANA-Video 480p
+- Generated MP4 via Image-to-Video pipeline
+
 ## [0.4.0] - 2026-05-17
 
 ### 🎉 Full upstream parity — video + training in scope

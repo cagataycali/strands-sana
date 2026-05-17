@@ -20,7 +20,7 @@ def test_top_level_imports():
 
 def test_version():
     import strands_sana
-    assert strands_sana.__version__ == "0.4.0"
+    assert strands_sana.__version__ == "0.4.1"
 
 
 def test_pipeline_import():
