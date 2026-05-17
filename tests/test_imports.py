@@ -20,7 +20,7 @@ def test_top_level_imports():
 
 def test_version():
     import strands_sana
-    assert strands_sana.__version__ == "0.2.0"
+    assert strands_sana.__version__ == "0.3.0"
 
 
 def test_pipeline_import():
@@ -68,4 +68,10 @@ def test_extras_imports():
         sana_inference_scale,
         sana_metric_clip, sana_metric_imagereward,
     ]:
+        assert callable(fn) or hasattr(fn, "original_func")
+
+
+def test_serve_and_prefetch_imports():
+    from strands_sana import sana_serve, sana_prefetch_model
+    for fn in (sana_serve, sana_prefetch_model):
         assert callable(fn) or hasattr(fn, "original_func")

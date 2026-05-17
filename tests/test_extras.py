@@ -51,3 +51,23 @@ def test_upload_no_hf_lib():
     # If installed, this should at least not crash on a bogus path
     r = _call(sana_upload_to_hf, path="/tmp/does/not/exist", repo_id="me/test")
     assert r["status"] == "error"  # error either way (auth or path)
+
+
+def test_sana_serve_unknown_model():
+    from strands_sana.tools.extras import sana_serve
+    r = _call(sana_serve, model="bogus")
+    assert r["status"] == "error"
+
+
+def test_sana_prefetch_unknown_model():
+    from strands_sana.tools.extras import sana_prefetch_model
+    r = _call(sana_prefetch_model, model="bogus")
+    assert r["status"] == "error"
+
+
+def test_negative_embed_cache_clear():
+    from strands_sana.tools.extras import clear_negative_embed_cache, _NEG_EMBED_CACHE
+    _NEG_EMBED_CACHE["test::neg"] = ("emb", "mask")
+    n = clear_negative_embed_cache()
+    assert n >= 1
+    assert len(_NEG_EMBED_CACHE) == 0

@@ -4,7 +4,7 @@ NVIDIA Sana text-to-image diffusion as [Strands Agents](https://github.com/stran
 
 [![PyPI version](https://img.shields.io/pypi/v/strands-sana.svg)](https://pypi.org/project/strands-sana/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-45%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-49%20passing-brightgreen.svg)](tests/)
 
 ## What is Sana?
 
@@ -34,7 +34,7 @@ agent("Generate a cyberpunk duck riding a neon motorcycle, 1024x1024")
 
 ## Coverage
 
-✅ **21 tools, 10 model checkpoints, 5 pipeline variants, 10 schedulers**
+✅ **23 tools, 10 model checkpoints, 5 pipeline variants, 10 schedulers**
 
 | Capability | Status |
 |---|:---:|
@@ -92,8 +92,8 @@ See [docs/api.md](docs/api.md) for full signatures.
 ```
 strands_sana/
 ├── tools/
-│   ├── generate.py    # 13 core tools
-│   └── extras.py      # 8 extras (schedulers, quantize, metrics, …)
+│   ├── generate.py    # 14 core tools
+│   └── extras.py      # 9 extras (schedulers, quantize, metrics, …)
 ├── pipeline/          # SanaPipelineWrapper, callbacks
 ├── models/            # registry, list_models, tag/kind filters
 └── utils/             # io, prompt enhancement, COMPLEX_HUMAN_INSTRUCTION

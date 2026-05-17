@@ -380,3 +380,124 @@ def sana_metric_imagereward(
         "image_path": image_path,
         "prompt": prompt,
     }
+
+
+# ────────────────────────────────────────────────────────────────────
+# SGLang server adapter (P4 #19)
+# ────────────────────────────────────────────────────────────────────
+@tool
+def sana_serve(
+    model: str = "sana-1.6b-1024",
+    port: int = 30000,
+    host: str = "0.0.0.0",
+    extra_args: Optional[List[str]] = None,
+) -> dict:
+    """Boot an SGLang server hosting the given Sana checkpoint.
+
+    Spawns `sglang.launch_server` in a subprocess. Returns immediately;
+    use the returned PID to stop it later.
+
+    Args:
+        model: Sana model alias (resolves to HF repo).
+        port: Bind port.
+        host: Bind host.
+        extra_args: Extra `sglang.launch_server` flags.
+
+    Requires `pip install "sglang[all]"`.
+    """
+    from ..models.registry import SANA_MODELS
+    if model not in SANA_MODELS:
+        return {"status": "error", "error": f"Unknown model: {model}"}
+
+    repo = SANA_MODELS[model].hf_repo
+    cmd = [
+        "python", "-m", "sglang.launch_server",
+        "--model-path", repo,
+        "--host", host,
+        "--port", str(port),
+    ]
+    if extra_args:
+        cmd.extend(extra_args)
+
+    import shutil, subprocess
+    if shutil.which("python") is None:
+        return {"status": "error", "error": "python not on PATH"}
+
+    try:
+        # Detached spawn — caller is responsible for reaping
+        proc = subprocess.Popen(
+            cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            start_new_session=True,
+        )
+    except FileNotFoundError as e:
+        return {"status": "error", "error": str(e)}
+
+    return {
+        "status": "success",
+        "pid": proc.pid,
+        "url": f"http://{host}:{port}",
+        "model": model,
+        "hf_repo": repo,
+        "note": "Stop with: kill <pid>; or `os.kill(pid, signal.SIGTERM)`",
+    }
+
+
+# ────────────────────────────────────────────────────────────────────
+# HF download progress (P5 #26)
+# ────────────────────────────────────────────────────────────────────
+@tool
+def sana_prefetch_model(
+    model: str = "sana-1.6b-1024",
+    quiet: bool = False,
+) -> dict:
+    """Pre-download a Sana checkpoint with progress reporting.
+
+    Useful before generating in a constrained env where you'd rather
+    pay the download cost up front than mid-prompt.
+    """
+    try:
+        from huggingface_hub import snapshot_download
+    except ImportError:
+        return {"status": "error", "error": "Install huggingface_hub: pip install huggingface_hub"}
+    from ..models.registry import SANA_MODELS
+
+    if model not in SANA_MODELS:
+        return {"status": "error", "error": f"Unknown model: {model}"}
+    repo = SANA_MODELS[model].hf_repo
+    try:
+        path = snapshot_download(repo_id=repo, tqdm_class=None if quiet else None)
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
+    return {"status": "success", "model": model, "hf_repo": repo, "local_path": path}
+
+
+# ────────────────────────────────────────────────────────────────────
+# Negative-prompt embedding cache (P3 #16)
+# ────────────────────────────────────────────────────────────────────
+_NEG_EMBED_CACHE: dict = {}
+
+
+def encode_negative_cached(pipe, negative_prompt: str):
+    """Encode a negative prompt and cache the embedding for reuse.
+
+    Most agents reuse the same negative prompt across many calls — the
+    Gemma-2 text encoder isn't free. This caches by `(model_id, prompt)`.
+    """
+    if not negative_prompt:
+        return None, None
+    key = f"{id(pipe)}::{negative_prompt}"
+    if key in _NEG_EMBED_CACHE:
+        return _NEG_EMBED_CACHE[key]
+    try:
+        emb, mask = pipe.encode_prompt(negative_prompt)
+    except AttributeError:
+        # Different diffusers API — fall through, no cache
+        return None, None
+    _NEG_EMBED_CACHE[key] = (emb, mask)
+    return emb, mask
+
+
+def clear_negative_embed_cache() -> int:
+    n = len(_NEG_EMBED_CACHE)
+    _NEG_EMBED_CACHE.clear()
+    return n
