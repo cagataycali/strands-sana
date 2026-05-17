@@ -75,3 +75,23 @@ def test_clear_pipeline_cache():
     n = clear_pipeline_cache()
     assert n >= 1
     assert len(_PIPELINE_CACHE) == 0
+
+
+def test_make_step_callback_signature():
+    from strands_sana.pipeline import make_step_callback
+    cb = make_step_callback(every_n=2)
+    # Should be callable with (pipe, step, timestep, callback_kwargs)
+    result = cb(None, 4, 100, {"latents": None})
+    assert result == {"latents": None}
+
+
+def test_make_step_callback_with_hook():
+    from strands_sana.pipeline import make_step_callback
+    seen = []
+    def hook(step, latents):
+        seen.append(step)
+    cb = make_step_callback(every_n=3, on_step=hook)
+    for s in range(10):
+        cb(None, s, s * 10, {"latents": "fake"})
+    # every_n=3 → fires at step 0, 3, 6, 9
+    assert seen == [0, 3, 6, 9]

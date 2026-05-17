@@ -20,7 +20,7 @@ def test_top_level_imports():
 
 def test_version():
     import strands_sana
-    assert strands_sana.__version__ == "0.1.0"
+    assert strands_sana.__version__ == "0.2.0"
 
 
 def test_pipeline_import():
@@ -51,3 +51,21 @@ def test_models_import():
     )
     assert isinstance(SANA_MODELS, dict)
     assert len(SANA_MODELS) >= 10
+
+
+def test_extras_imports():
+    from strands_sana import (
+        sana_set_scheduler, sana_list_schedulers,
+        sana_quantize, sana_swap_vae,
+        sana_upload_to_hf,
+        sana_inference_scale,
+        sana_metric_clip, sana_metric_imagereward,
+    )
+    for fn in [
+        sana_set_scheduler, sana_list_schedulers,
+        sana_quantize, sana_swap_vae,
+        sana_upload_to_hf,
+        sana_inference_scale,
+        sana_metric_clip, sana_metric_imagereward,
+    ]:
+        assert callable(fn) or hasattr(fn, "original_func")

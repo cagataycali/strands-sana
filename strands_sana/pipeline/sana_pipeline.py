@@ -281,3 +281,33 @@ def clear_pipeline_cache() -> int:
     except Exception:
         pass
     return n
+
+
+# ────────────────────────────────────────────────────────────────────
+# Streaming preview helper (P4 #18)
+# ────────────────────────────────────────────────────────────────────
+def make_step_callback(every_n: int = 5, on_step=None):
+    """Build a `callback_on_step_end` that fires every N steps.
+
+    Used to stream preview decodes back to a Strands streaming agent.
+
+    Args:
+        every_n: Fire callback every N denoising steps.
+        on_step: Optional `fn(step:int, latents:Tensor) -> dict` hook.
+                 Default just logs progress.
+
+    Returns:
+        Callable suitable for `pipeline(callback_on_step_end=...)`.
+    """
+    def _cb(pipe, step, timestep, callback_kwargs):
+        if step % every_n == 0:
+            latents = callback_kwargs.get("latents")
+            if on_step is not None:
+                try:
+                    on_step(step, latents)
+                except Exception as e:
+                    logger.debug(f"on_step hook failed: {e}")
+            else:
+                logger.info(f"step {step}/{int(timestep)}")
+        return callback_kwargs
+    return _cb
