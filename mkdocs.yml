@@ -1,43 +1,110 @@
 site_name: strands-sana
-site_description: NVIDIA Sana text-to-image diffusion as Strands Agent tools
-site_url: https://cagataycali.github.io/strands-sana
+site_url: https://strands-sana.cagataycali.com
+site_description: "NVIDIA Sana inference + training as Strands Agent tools. 33 tools, 15 models, 7 pipelines."
 repo_url: https://github.com/cagataycali/strands-sana
 repo_name: cagataycali/strands-sana
 
-theme:
-  name: material
-  features:
-    - navigation.tabs
-    - navigation.sections
-    - content.code.copy
-    - content.code.annotate
-  palette:
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: deep purple
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: deep purple
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
+extra_css:
+  - stylesheets/extra.css
 
-plugins:
-  - search
-
-markdown_extensions:
-  - admonition
-  - pymdownx.highlight
-  - pymdownx.superfences
-  - pymdownx.tabbed
-  - tables
-  - toc:
-      permalink: true
+extra_javascript:
+  - https://unpkg.com/mermaid@10/dist/mermaid.min.js
 
 nav:
   - Home: index.md
-  - API Reference: api.md
-  - Coverage (DIFF): ../DIFF.md
+  - Gallery: gallery.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quickstart: getting-started/quickstart.md
+      - First Image: getting-started/first-image.md
+      - First Video: getting-started/first-video.md
+  - Guide:
+      - Models: guide/models.md
+      - Image Generation: guide/image-generation.md
+      - Video Generation: guide/video-generation.md
+      - Image-to-Image: guide/img2img.md
+      - Sana-Sprint: guide/sprint.md
+      - PAG: guide/pag.md
+      - ControlNet: guide/controlnet.md
+      - LoRA: guide/lora.md
+      - Schedulers: guide/schedulers.md
+      - Inference Scaling: guide/inference-scaling.md
+      - Memory & Quantization: guide/memory.md
+      - Metrics: guide/metrics.md
+      - ComfyUI Export: guide/comfyui.md
+      - Training: guide/training.md
+  - Examples:
+      - Overview: examples/overview.md
+      - Multi-Style Batch: examples/multi-style.md
+      - Video Pipeline: examples/video-pipeline.md
+      - Best-of-K: examples/best-of-k.md
+  - Architecture: architecture.md
+  - API Reference: api-reference.md
+  - Bugs Fixed (Thor): bugs-fixed.md
+
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+    logo: material/duck
+  palette:
+    - scheme: default
+      primary: deep purple
+      accent: pink
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: black
+      accent: pink
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - navigation.tracking
+    - toc.follow
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - search.suggest
+    - search.highlight
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format ''
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.betterem
+  - pymdownx.mark
+  - pymdownx.caret
+  - pymdownx.tilde
+  - pymdownx.keys
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji ''
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg ''
+  - attr_list
+  - md_in_html
+  - tables
+  - def_list
+  - footnotes
+  - toc:
+      permalink: true
+
+plugins:
+  - search
