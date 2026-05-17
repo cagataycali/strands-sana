@@ -20,7 +20,7 @@ def test_top_level_imports():
 
 def test_version():
     import strands_sana
-    assert strands_sana.__version__ == "0.3.0"
+    assert strands_sana.__version__ == "0.4.0"
 
 
 def test_pipeline_import():
@@ -74,4 +74,22 @@ def test_extras_imports():
 def test_serve_and_prefetch_imports():
     from strands_sana import sana_serve, sana_prefetch_model
     for fn in (sana_serve, sana_prefetch_model):
+        assert callable(fn) or hasattr(fn, "original_func")
+
+
+def test_video_imports():
+    from strands_sana import sana_video_generate, sana_image_to_video, sana_img2img
+    for fn in (sana_video_generate, sana_image_to_video, sana_img2img):
+        assert callable(fn) or hasattr(fn, "original_func")
+
+
+def test_training_imports():
+    from strands_sana import (
+        sana_train_lora, sana_train, sana_train_scm_ladd,
+        sana_train_solrl, sana_train_video, sana_train_longsana,
+        sana_list_training_configs,
+    )
+    for fn in (sana_train_lora, sana_train, sana_train_scm_ladd,
+               sana_train_solrl, sana_train_video, sana_train_longsana,
+               sana_list_training_configs):
         assert callable(fn) or hasattr(fn, "original_func")

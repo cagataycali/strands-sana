@@ -31,7 +31,7 @@ def test_all_models_have_required_fields():
         assert info.resolution > 0
         assert info.params
         assert info.description
-        assert info.pipeline_kind in ("t2i", "pag", "sprint", "controlnet", "video")
+        assert info.pipeline_kind in ("t2i", "pag", "sprint", "sprint-i2i", "controlnet", "video", "image-to-video")
 
 
 def test_sana_15_models_present():
