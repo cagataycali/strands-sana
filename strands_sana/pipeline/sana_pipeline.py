@@ -255,6 +255,14 @@ class SanaPipelineWrapper:
             gen_device = "cpu" if self.device == "mps" else self.device
             generator = torch.Generator(device=gen_device).manual_seed(seed)
 
+        # BUG#6: SANA-Video requires (h, w) divisible by 32. The default
+        # use_resolution_binning=True can produce non-conforming sizes, so we
+        # snap explicitly and disable binning for video unless caller forces.
+        h = (h // 32) * 32
+        w = (w // 32) * 32
+        if h == 0 or w == 0:
+            raise ValueError(f"height/width must be >=32, got h={h}, w={w}")
+
         kwargs: dict[str, Any] = dict(
             prompt=prompt,
             negative_prompt=negative_prompt or "",
@@ -264,7 +272,7 @@ class SanaPipelineWrapper:
             frames=f,
             num_videos_per_prompt=num_videos,
             generator=generator,
-            use_resolution_binning=use_resolution_binning,
+            use_resolution_binning=False,  # explicit sizes, no binning
             max_sequence_length=max_sequence_length,
         )
         if complex_human_instruction is not None:
