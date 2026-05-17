@@ -21,16 +21,28 @@ def _save_video_frames(frames, output_dir: Optional[str], fps: int,
     import time
     base = out / f"{prefix}_{int(time.time() * 1000)}"
 
-    # Try MP4 via diffusers / imageio first
+    # Try MP4 via diffusers (uses imageio-ffmpeg or opencv backend)
+    path = str(base.with_suffix(".mp4"))
     try:
         from diffusers.utils import export_to_video
-        path = str(base.with_suffix(".mp4"))
         export_to_video(frames, path, fps=fps)
         return path
     except Exception as e:
-        logger.warning(f"export_to_video failed, falling back to WebP: {e}")
+        logger.warning(f"export_to_video failed: {e}; trying imageio direct")
 
-    # Fallback: animated WebP
+    # Try imageio with ffmpeg directly
+    try:
+        import imageio
+        import numpy as np
+        with imageio.get_writer(path, fps=fps, codec="libx264",
+                                quality=8) as w:
+            for f in frames:
+                w.append_data(np.array(f))
+        return path
+    except Exception as e:
+        logger.warning(f"imageio mp4 failed: {e}; falling back to WebP")
+
+    # Last resort: animated WebP (always works, no extra deps)
     path = str(base.with_suffix(".webp"))
     if frames:
         frames[0].save(

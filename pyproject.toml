@@ -45,6 +45,10 @@ hf = [
     "huggingface_hub>=0.20.0",
     "safetensors>=0.4.0",
 ]
+video = [
+    "imageio>=2.34",
+    "imageio-ffmpeg>=0.5",
+]
 quantization = [
     "bitsandbytes>=0.43.0",
     "optimum-quanto>=0.2.0",
