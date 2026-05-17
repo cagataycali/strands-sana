@@ -13,7 +13,7 @@ def _call(t, **kw):
 def test_video_models_registered():
     from strands_sana.models import list_models
     videos = list_models(kind="video")
-    assert len(videos) >= 4
+    assert len(videos) >= 3  # 480, 720, longsana
     names = {m.name for m in videos}
     assert "sana-video-2b-480" in names
     assert "longsana-2b-480" in names

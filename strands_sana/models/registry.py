@@ -131,19 +131,9 @@ SANA_MODELS: dict[str, SanaModelInfo] = {
     ),
 
     # ── SANA-Video (NEW v0.4.0) ──────────────────────────────────────
-    "sana-video-2b-256": SanaModelInfo(
-        name="sana-video-2b-256",
-        hf_repo="Efficient-Large-Model/SANA_Video_2B_256px",
-        resolution=256, params="2B",
-        description="SANA-Video 2B @ 256px — fastest",
-        pipeline_kind="video",
-        default_steps=50, default_guidance=6.0,
-        default_frames=49, fps=24,
-        tags=["video", "fast"],
-    ),
     "sana-video-2b-480": SanaModelInfo(
         name="sana-video-2b-480",
-        hf_repo="Efficient-Large-Model/SANA_Video_2B_480px",
+        hf_repo="Efficient-Large-Model/Sana-Video_2B_480p_diffusers",
         resolution=480, params="2B",
         description="SANA-Video 2B @ 480px (5s clips)",
         pipeline_kind="video",
@@ -153,7 +143,7 @@ SANA_MODELS: dict[str, SanaModelInfo] = {
     ),
     "sana-video-2b-720": SanaModelInfo(
         name="sana-video-2b-720",
-        hf_repo="Efficient-Large-Model/SANA_Video_2B_720px",
+        hf_repo="Efficient-Large-Model/SANA-Video_2B_720p_diffusers",
         resolution=720, params="2B",
         description="SANA-Video 2B @ 720px (LTX-VAE refiner)",
         pipeline_kind="video",
@@ -164,7 +154,7 @@ SANA_MODELS: dict[str, SanaModelInfo] = {
     ),
     "sana-video-i2v-480": SanaModelInfo(
         name="sana-video-i2v-480",
-        hf_repo="Efficient-Large-Model/SANA_Video_I2V_2B_480px",
+        hf_repo="Efficient-Large-Model/Sana-Video_2B_480p_diffusers",
         resolution=480, params="2B",
         description="SANA-Video Image-to-Video @ 480px",
         pipeline_kind="image-to-video",
@@ -176,7 +166,7 @@ SANA_MODELS: dict[str, SanaModelInfo] = {
     # ── LongSANA (real-time minute-long video) ───────────────────────
     "longsana-2b-480": SanaModelInfo(
         name="longsana-2b-480",
-        hf_repo="Efficient-Large-Model/LongSANA_2B_480px",
+        hf_repo="Efficient-Large-Model/SANA-Video_2B_480p_LongLive_diffusers",
         resolution=480, params="2B",
         description="LongSANA 2B @ 480px — minute-long, 27 FPS real-time",
         pipeline_kind="video",
