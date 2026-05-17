@@ -49,6 +49,9 @@ video = [
     "imageio>=2.34",
     "imageio-ffmpeg>=0.5",
 ]
+lora = [
+    "peft>=0.12.0",
+]
 quantization = [
     "bitsandbytes>=0.43.0",
     "optimum-quanto>=0.2.0",

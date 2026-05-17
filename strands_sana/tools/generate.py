@@ -352,7 +352,22 @@ def sana_load_lora(
         model: Which base model alias to attach to.
     """
     pipe = get_pipeline(model_name=model)
-    pipe.load_lora(repo_or_path, scale=scale, adapter_name=adapter_name)
+    try:
+        pipe.load_lora(repo_or_path, scale=scale, adapter_name=adapter_name)
+    except ValueError as e:
+        msg = str(e)
+        if "PEFT" in msg:
+            return {
+                "status": "error",
+                "error": (
+                    "PEFT backend required for LoRA. Install with: "
+                    "pip install 'strands-sana[lora]' OR pip install peft"
+                ),
+                "underlying": msg,
+            }
+        return {"status": "error", "error": msg, "lora": repo_or_path}
+    except Exception as e:
+        return {"status": "error", "error": str(e), "lora": repo_or_path}
     return {
         "status": "success",
         "lora": repo_or_path,
