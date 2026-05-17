@@ -207,6 +207,11 @@ class SanaPipelineWrapper:
             kwargs["image"] = image
             kwargs["strength"] = strength
 
+        # BUG#5: Sprint uses `intermediate_timesteps=1.3` only for steps=2;
+        # for any other step count we must explicitly disable it.
+        if self.kind in ("sprint", "sprint-i2i") and steps != 2:
+            kwargs["intermediate_timesteps"] = None
+
         out = pipe(**kwargs)
         return out.images
 
