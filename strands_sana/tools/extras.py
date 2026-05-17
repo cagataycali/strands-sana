@@ -66,9 +66,33 @@ def sana_set_scheduler(
     # Pull existing scheduler config so the new scheduler has matching
     # training schedule / num_train_timesteps / etc.
     cfg = dict(pipeline.scheduler.config)
-    if use_flow_sigmas and "DPMSolver" in cls.__name__:
+
+    # BUG#9: Sana is flow-matching → its scheduler.config has
+    # prediction_type='flow_prediction', but only FlowMatch* and DPMSolver*
+    # schedulers accept that. For other schedulers we must strip it (and
+    # use_flow_sigmas), else they ValueError on first step.
+    cls_name = cls.__name__
+    is_flow_match = cls_name.startswith("FlowMatch")
+    is_dpm_solver = "DPMSolver" in cls_name
+
+    if is_dpm_solver and use_flow_sigmas:
         cfg["use_flow_sigmas"] = True
         cfg["prediction_type"] = "flow_prediction"
+    elif is_flow_match:
+        # Native flow-match — leave config alone
+        pass
+    else:
+        # Generic scheduler — drop incompatible flow keys
+        cfg.pop("use_flow_sigmas", None)
+        if cfg.get("prediction_type") == "flow_prediction":
+            # epsilon is the safest default; Sana is a flow-matching model
+            # so non-flow schedulers will be lossy — warn caller.
+            cfg["prediction_type"] = "epsilon"
+            logger.warning(
+                f"Scheduler {cls_name} doesn't support flow_prediction; "
+                f"using prediction_type=epsilon. Quality may degrade — "
+                f"prefer FlowMatch* or DPMSolver* schedulers for Sana."
+            )
 
     new_sched = cls.from_config(cfg)
     pipeline.scheduler = new_sched
