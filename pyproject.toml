@@ -1,0 +1,79 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "strands-sana"
+version = "0.0.1"
+description = "NVIDIA Sana text-to-image diffusion for Strands Agents"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Cagatay Cali", email = "cagataycali@icloud.com"}
+]
+keywords = [
+    "strands", "agents", "sana", "nvidia", "diffusion",
+    "text-to-image", "generative-ai", "image-generation",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Multimedia :: Graphics",
+]
+
+dependencies = [
+    "strands-agents",
+    "torch>=2.0.0",
+    "torchvision",
+    "diffusers>=0.30.0",
+    "transformers>=4.40.0",
+    "accelerate>=0.25.0",
+    "pillow>=10.0.0",
+    "numpy",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+hf = [
+    "huggingface_hub>=0.20.0",
+    "safetensors>=0.4.0",
+]
+quantization = [
+    "bitsandbytes>=0.43.0",
+    "optimum-quanto>=0.2.0",
+]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov",
+    "ruff",
+    "black",
+    "mypy",
+]
+docs = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+]
+
+[project.urls]
+Homepage = "https://github.com/cagataycali/strands-sana"
+Repository = "https://github.com/cagataycali/strands-sana"
+Issues = "https://github.com/cagataycali/strands-sana/issues"
+
+[tool.setuptools.packages.find]
+include = ["strands_sana*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
